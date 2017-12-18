@@ -75,7 +75,7 @@ public class Date {
 
     @Override
     public String toString() {
-        return "Date{" + "day=" + day + ", month=" + month + ", year=" + year + '}';
+        return String.format("%04d-%02d-%02d", year, month, day);
     }
 
     private int getMonthMaxDays() {
