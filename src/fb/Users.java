@@ -5,12 +5,13 @@
 package fb;
 
 import fb.helper.Date;
+import fb.helper.DateTime;
 
 /**
  *
  * @author hassan
  */
-public class user {
+public class Users {
 
     private int id;
     private String firstName;
@@ -19,12 +20,13 @@ public class user {
     private String password;
     private String email;
     private Date dateOfBirth;
+    private DateTime lastOnline;
 
-    public user() {
+    public Users() {
 
     }
 
-    public user(int id, String firstName, String lastName, String username, String password, String email, Date dateOfBirth) {
+    public Users(int id, String firstName, String lastName, String username, String password, String email, Date dateOfBirth) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
