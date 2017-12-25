@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated Dec 25, 2017 10:19:55 AM by Hibernate Tools 4.3.1 -->
+<!-- Generated Dec 25, 2017 12:32:00 PM by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="pojos.Users" table="users" catalog="facebook" optimistic-lock="version">
-        
         <id name="id" type="java.lang.Integer">
             <column name="id" />
             <generator class="identity" />

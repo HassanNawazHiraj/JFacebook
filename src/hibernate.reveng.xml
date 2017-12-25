@@ -41,6 +41,8 @@ Contributor(s):
 -->
 <hibernate-reverse-engineering>
   <schema-selection match-catalog="facebook"/>
-  <table-filter match-name="posts"/>
+  <table-filter match-name="friendrequests"/>
+  <table-filter match-name="friends"/>
   <table-filter match-name="users"/>
+  <table-filter match-name="posts"/>
 </hibernate-reverse-engineering>

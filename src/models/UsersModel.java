@@ -131,9 +131,12 @@ public class UsersModel {
         List list = null;
         try {
             tx = session.beginTransaction();
+            
             Query q = session.createQuery("From Users where id=:id");
             q.setParameter("id", id);
             list = q.list();
+            
+            
             if(list.size() > 0) {
                 return ((Users)list.get(0));
             } 
