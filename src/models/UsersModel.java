@@ -154,5 +154,103 @@ public class UsersModel {
         }
         return null;
     }
+        public static pojos.Users getUser(String username) {
+          Session session = Controller.getSessionFactory().openSession();
+        Transaction tx = null;
+        //  int id = 0;
+        List list = null;
+        try {
+            tx = session.beginTransaction();
+            
+            Query q = session.createQuery("From Users where username=:username");
+            q.setParameter("username", username);
+            list = q.list();
+            
+            
+            if(list.size() > 0) {
+                return ((Users)list.get(0));
+            } 
+            //  pojos.Users user = new pojos.Users("Ali", "Nawaz", "alinawazsolid", "128", "alinawazsolid@gmail.com", new Date(1980-1900, 4, 3), new Date(1960-1900, 2, 3, 12, 0, 0));
+            // id = (int) session.save(u);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+          
+            //e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return null;
+    }
+     public static boolean usernameExists(String username) {
+          Session session = Controller.getSessionFactory().openSession();
+        Transaction tx = null;
+        //  int id = 0;
+        List list = null;
+        try {
+            tx = session.beginTransaction();
+            
+            Query q = session.createQuery("From Users where username=:username");
+            q.setParameter("username", username);
+            list = q.list();
+            
+            tx.commit();
+            if(list.size() > 0) {
+                session.close();
+                return true;
+            } else {
+                session.close();
+                return false;
+            }
+            //  pojos.Users user = new pojos.Users("Ali", "Nawaz", "alinawazsolid", "128", "alinawazsolid@gmail.com", new Date(1980-1900, 4, 3), new Date(1960-1900, 2, 3, 12, 0, 0));
+            // id = (int) session.save(u);
+            
+        } catch (HibernateException e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+          
+            //e.printStackTrace();
+        } finally {
+            
+        }
+        return false;
+    }
+     public static boolean emailExists(String email) {
+          Session session = Controller.getSessionFactory().openSession();
+        Transaction tx = null;
+        //  int id = 0;
+        List list = null;
+        try {
+            tx = session.beginTransaction();
+            
+            Query q = session.createQuery("From Users where email=:email");
+            q.setParameter("email", email);
+            list = q.list();
+            
+            tx.commit();
+            if(list.size() > 0) {
+                session.close();
+                return true;
+            } else {
+                session.close();
+                return false;
+            }
+            //  pojos.Users user = new pojos.Users("Ali", "Nawaz", "alinawazsolid", "128", "alinawazsolid@gmail.com", new Date(1980-1900, 4, 3), new Date(1960-1900, 2, 3, 12, 0, 0));
+            // id = (int) session.save(u);
+            
+        } catch (HibernateException e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+          
+            //e.printStackTrace();
+        } finally {
+            
+        }
+        return false;
+    }
 
 }

@@ -73,4 +73,9 @@ public class Posts implements java.io.Serializable {
         this.users = users;
     }
 
+    @Override
+    public String toString() {
+        return "Posts{" + "id=" + id + ", userId=" + userId + ", body=" + body + ", postDate=" + postDate + ", postType=" + postType + ", users=" + users + '}';
+    }
+
 }

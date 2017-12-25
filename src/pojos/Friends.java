@@ -12,7 +12,21 @@ public class Friends  implements java.io.Serializable {
      private Integer id;
      private int userId;
      private int friendId;
+     private pojos.Users friendData;
 
+    public Users getFriendData() {
+        return friendData;
+    }
+
+    public void setFriendData(Users friendData) {
+        this.friendData = friendData;
+    }
+
+    @Override
+    public String toString() {
+        return "Friends{" + "id=" + id + ", userId=" + userId + ", friendId=" + friendId + ", friendData=" + friendData + '}';
+    }
+     
     public Friends() {
     }
 

@@ -89,6 +89,11 @@ public class Users  implements java.io.Serializable {
         this.lastOnline = lastOnline;
     }
 
+    @Override
+    public String toString() {
+        return "Users{" + "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", username=" + username + ", password=" + password + ", email=" + email + ", dateOfBirth=" + dateOfBirth + ", lastOnline=" + lastOnline + '}';
+    }
+
 
 
 
