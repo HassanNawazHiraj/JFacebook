@@ -3,7 +3,10 @@
  * All Rights Reserved
  */
 package jfacebook;
-
+import connection.dbtest;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import connection.Controller;
+//import models.UsersModel;
 /**
  *
  * @author hassan
@@ -11,10 +14,13 @@ package jfacebook;
 public class jfacebook {
 
     public static void main(String[] args) {
-        fb.helper.Time t = new fb.helper.Time(12,56,0);
-        fb.helper.Date d = new fb.helper.Date(22, 4, 1997);
-        System.out.println(t);
-        System.out.println(d);
+        dbtest test = new dbtest();
+        //test.get_user();
+        //UsersModel hassan = new UsersModel();
+        //System.out.println(UsersModel.verifyUser("hassan", "1213"));
+       // System.out.println(UsersModel.getUsername(1));
+       //models.PostsModel.addPost(new pojos.Posts(0, "test", new java.util.Date(0, 1, 1)));
+        StandardServiceRegistryBuilder.destroy(Controller.getSessionFactory().getSessionFactoryOptions().getServiceRegistry());
     }
     
 }
