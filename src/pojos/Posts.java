@@ -10,6 +10,7 @@ public class Posts implements java.io.Serializable {
 
     private Integer id;
     private int userId;
+    private int fetchId;
     private String body;
     private Date postDate;
     private int postType;
@@ -18,11 +19,20 @@ public class Posts implements java.io.Serializable {
     public Posts() {
     }
 
-    public Posts(int userId, String body, Date postDate, int postType) {
+    public Posts(int userId, int fetchID, String body, Date postDate, int postType) {
         this.userId = userId;
         this.body = body;
         this.postDate = postDate;
         this.postType = postType;
+        this.fetchId = fetchID;
+    }
+
+    public int getFetchId() {
+        return fetchId;
+    }
+
+    public void setFetchId(int fetchId) {
+        this.fetchId = fetchId;
     }
 
     public Integer getId() {

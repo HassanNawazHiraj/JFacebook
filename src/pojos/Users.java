@@ -88,6 +88,10 @@ public class Users  implements java.io.Serializable {
     public void setLastOnline(Date lastOnline) {
         this.lastOnline = lastOnline;
     }
+    
+    public String getFullName() {
+        return firstName+" "+lastName;
+    }
 
     @Override
     public String toString() {

@@ -11,6 +11,9 @@
         <property name="userId" type="int">
             <column name="user_id" not-null="true" />
         </property>
+        <property name="fetchId" type="int">
+            <column name="fetch_id" not-null="true" />
+        </property>
         <property name="body" type="string">
             <column name="body" length="65535" not-null="true" />
         </property>
