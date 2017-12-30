@@ -5,6 +5,7 @@
 package gui;
 
 import java.util.List;
+import models.LikesModel;
 import models.UsersModel;
 import pojos.Users;
 
@@ -70,10 +71,8 @@ public class mainWindow extends javax.swing.JFrame {
     private void nextPost() {
         currentFetechedPosts = models.PostsModel.getPosts(logedUser.getId(), 1, currentPage + 1);
         currentPage += 1;
-        pageLabel.setText("Page "+(currentPage+1));
+        pageLabel.setText("Page " + (currentPage + 1));
         backButton.setVisible(true);
-
-       
 
         if (currentFetechedPosts.size() == 1) {
             //   nextPagePossible = false;
@@ -81,14 +80,14 @@ public class mainWindow extends javax.swing.JFrame {
             populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
             postPanel1.setVisible(false);
             pageLabel.setText("Last Page");
-        } 
+        }
         if (currentFetechedPosts.size() == 2) {
             // nextPagePossible = true;
             nextButton.setVisible(true);
             populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
             populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
         }
-         //check if more posts
+        //check if more posts
         if (!morePosts()) {
             nextButton.setVisible(false);
             pageLabel.setText("Last Page");
@@ -100,7 +99,7 @@ public class mainWindow extends javax.swing.JFrame {
     private void previousPost() {
         currentFetechedPosts = models.PostsModel.getPosts(logedUser.getId(), 1, currentPage - 1);
         currentPage -= 1;
-        pageLabel.setText("Page "+(currentPage+1));
+        pageLabel.setText("Page " + (currentPage + 1));
         nextButton.setVisible(true);
         populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
         populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
@@ -187,16 +186,31 @@ public class mainWindow extends javax.swing.JFrame {
 
     private void populatePostPanel(pojos.Posts p) {
         postTittleLabel.setText(UsersModel.getUser(p.getUserId()).getFullName());
-        postLabel.setText("<html>"+p.getBody()+"</html>");
+        postLabel.setText("<html>" + p.getBody() + "</html>");
         dateLabel.setText(p.getPostDate().toString());
-
+        if (!(p.getLikes() == null)) {
+            likeLabel.setText(p.getLikes().size() + " Likes");
+        }
+        boolean hasUserLikedPost = LikesModel.hasUserLikedPost(logedUser.getId(), p.getId(),
+                p.getPostType());
+        //    System.out.println(p.getLikes());
+       if  (hasUserLikedPost) likeButton.setText("Liked"); else likeButton.setText("Like");
     }
 
     private void populatePostPanel1(pojos.Posts p) {
         postTittleLabel1.setText(UsersModel.getUser(p.getUserId()).getFullName());
-        postLabel1.setText("<html>"+p.getBody()+"</html>");
+        postLabel1.setText("<html>" + p.getBody() + "</html>");
         dateLabel1.setText(p.getPostDate().toString());
-
+        if (!(p.getLikes() == null)) {
+            likeLabel1.setText(p.getLikes().size() + " Likes");
+        } else {
+            likeLabel1.setText("0 Likes");
+        }
+        boolean hasUserLikedPost = LikesModel.hasUserLikedPost(logedUser.getId(), p.getId(),
+                 p.getPostType());
+        //  System.out.println(p.getLikes());
+        
+       if  (hasUserLikedPost) likeButton1.setText("Liked"); else likeButton1.setText("Like");
     }
 
     /**
@@ -219,12 +233,14 @@ public class mainWindow extends javax.swing.JFrame {
         dateLabel = new javax.swing.JLabel();
         commentsButton = new javax.swing.JButton();
         likeButton = new javax.swing.JButton();
+        likeLabel = new javax.swing.JLabel();
         postPanel1 = new javax.swing.JPanel();
         postTittleLabel1 = new javax.swing.JLabel();
         postLabel1 = new javax.swing.JLabel();
         dateLabel1 = new javax.swing.JLabel();
         commentsButton1 = new javax.swing.JButton();
         likeButton1 = new javax.swing.JButton();
+        likeLabel1 = new javax.swing.JLabel();
         nextButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
         pageLabel = new javax.swing.JLabel();
@@ -268,7 +284,14 @@ public class mainWindow extends javax.swing.JFrame {
             }
         });
 
-        likeButton.setText("Like/Dislike");
+        likeButton.setText("Like");
+        likeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                likeButtonActionPerformed(evt);
+            }
+        });
+
+        likeLabel.setText("0 Likes");
 
         javax.swing.GroupLayout postPanelLayout = new javax.swing.GroupLayout(postPanel);
         postPanel.setLayout(postPanelLayout);
@@ -285,7 +308,8 @@ public class mainWindow extends javax.swing.JFrame {
                             .addGroup(postPanelLayout.createSequentialGroup()
                                 .addComponent(commentsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(likeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(likeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(likeLabel))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -298,11 +322,13 @@ public class mainWindow extends javax.swing.JFrame {
                 .addComponent(dateLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(postLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(likeLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(postPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(commentsButton)
                     .addComponent(likeButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         postPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -325,7 +351,14 @@ public class mainWindow extends javax.swing.JFrame {
             }
         });
 
-        likeButton1.setText("Like/Dislike");
+        likeButton1.setText("Like");
+        likeButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                likeButton1ActionPerformed(evt);
+            }
+        });
+
+        likeLabel1.setText("0 Likes");
 
         javax.swing.GroupLayout postPanel1Layout = new javax.swing.GroupLayout(postPanel1);
         postPanel1.setLayout(postPanel1Layout);
@@ -342,8 +375,9 @@ public class mainWindow extends javax.swing.JFrame {
                             .addGroup(postPanel1Layout.createSequentialGroup()
                                 .addComponent(commentsButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(likeButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 265, Short.MAX_VALUE)))
+                                .addComponent(likeButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(likeLabel1))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         postPanel1Layout.setVerticalGroup(
@@ -355,11 +389,13 @@ public class mainWindow extends javax.swing.JFrame {
                 .addComponent(dateLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(postLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(likeLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(postPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(commentsButton1)
                     .addComponent(likeButton1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         nextButton.setText("Next");
@@ -413,7 +449,7 @@ public class mainWindow extends javax.swing.JFrame {
                         .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(185, 185, 185)
                         .addComponent(pageLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 194, Short.MAX_VALUE)
                         .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -471,6 +507,59 @@ public class mainWindow extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void likeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_likeButtonActionPerformed
+        if (!toggleLike(0)) {
+            System.out.println("Error while liking the post");
+        }
+    }//GEN-LAST:event_likeButtonActionPerformed
+
+    private void likeButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_likeButton1ActionPerformed
+        if (!toggleLike(1)) {
+            System.out.println("Error while liking the post");
+        }
+    }//GEN-LAST:event_likeButton1ActionPerformed
+
+    private boolean toggleLike(int postNumber) {
+        pojos.Posts p;
+        boolean buttonState = false;
+        // if(postNumber == 1) {
+        if (currentFetechedPosts.get(postNumber) == null) {
+            return false;
+        } else {
+            p = (pojos.Posts) currentFetechedPosts.get(postNumber);
+        }
+
+        switch (postNumber) {
+            case 0:
+                buttonState = (likeButton.getText().compareTo("Liked") == 0);
+                break;
+            case 1:
+                buttonState = (likeButton1.getText().compareTo("Liked") == 0);
+        }
+
+        if (buttonState) {
+            if (!(LikesModel.removeLike(new pojos.Likes(logedUser.getId(), p.getId(), p.getPostType())))) {
+                return false;
+            }
+
+        } else {
+            if (!(LikesModel.addLike(new pojos.Likes(logedUser.getId(), p.getId(), p.getPostType())))) {
+                return false;
+            }
+        }
+
+        switch (postNumber) {
+            case 0:
+                likeButton.setText((buttonState) ? "Like" : "Liked");
+                break;
+            case 1:
+                likeButton1.setText((buttonState) ? "Like" : "Liked");
+        }
+
+        // }
+        return true;
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -519,6 +608,8 @@ public class mainWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton likeButton;
     private javax.swing.JButton likeButton1;
+    private javax.swing.JLabel likeLabel;
+    private javax.swing.JLabel likeLabel1;
     private javax.swing.JButton nextButton;
     private javax.swing.JLabel pageLabel;
     private javax.swing.JLabel postLabel;

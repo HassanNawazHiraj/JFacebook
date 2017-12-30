@@ -55,12 +55,13 @@ public class PostsModel {
         }
         return null;
     }
+
     /**
-     * 
+     *
      * @param user_id posted by
      * @param post_type 1=wall, 2=group, 3=page
      * @param page_number OFFSET page_number*2
-     * @return 
+     * @return
      */
     public static List getPosts(int fetch_id, int post_type, int page_number) {
         Session session = Controller.getSessionFactory().openSession();
@@ -72,20 +73,26 @@ public class PostsModel {
             //get post data
             Query q = session.createQuery("From Posts where fetch_id=:fetch_id and post_type=:post_type order by post_date desc");
             q.setMaxResults(2);
-            q.setFirstResult(page_number*2);
+            q.setFirstResult(page_number * 2);
             q.setParameter("fetch_id", fetch_id);
             q.setParameter("post_type", post_type);
-           // q.setParameter("offset", page_number*2);
+            // q.setParameter("offset", page_number*2);
             list = q.list();
 
             if (list.size() > 0) {
                 // add user data
                 for (int i = 0; i < list.size(); i++) {
+                    //filling user object
                     Query qu = session.createQuery("From Users where id=:id");
                     qu.setParameter("id", ((pojos.Posts) list.get(i)).getUserId());
                     List list2 = qu.list();
                     pojos.Posts p = (pojos.Posts) list.get(i);
                     p.setUsers((pojos.Users) list2.get(0));
+
+                    //filling likes user object
+                    List<pojos.Users> luo = LikesModel.getLikes(post_type, ((pojos.Posts) list.get(i)).getId()  );
+                    p.setLikes(luo);
+
                     list.set(i, p);
                 }
 
@@ -153,7 +160,7 @@ public class PostsModel {
             if (tx != null) {
                 tx.rollback();
             }
-            System.out.println("---"+e.getMessage());
+            System.out.println("---" + e.getMessage());
             return false;
             // e.printStackTrace();
         } finally {

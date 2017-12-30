@@ -54,7 +54,7 @@
                       <Component id="backButton" min="-2" pref="88" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="185" max="-2" attributes="0"/>
                       <Component id="pageLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="194" max="32767" attributes="0"/>
                       <Component id="nextButton" min="-2" pref="88" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -171,6 +171,7 @@
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="likeButton" min="-2" pref="142" max="-2" attributes="0"/>
                               </Group>
+                              <Component id="likeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
@@ -188,12 +189,14 @@
                   <Component id="dateLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="postLabel" min="-2" pref="69" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="likeLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="commentsButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="likeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -236,7 +239,15 @@
         </Component>
         <Component class="javax.swing.JButton" name="likeButton">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Like/Dislike"/>
+            <Property name="text" type="java.lang.String" value="Like"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="likeButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="likeLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="0 Likes"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -254,11 +265,11 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="postLabel1" alignment="0" pref="0" max="32767" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="postTittleLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="dateLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -267,8 +278,9 @@
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="likeButton1" min="-2" pref="142" max="-2" attributes="0"/>
                               </Group>
+                              <Component id="likeLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="0" pref="265" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -284,12 +296,14 @@
                   <Component id="dateLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="postLabel1" min="-2" pref="69" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="likeLabel1" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="commentsButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="likeButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -332,7 +346,15 @@
         </Component>
         <Component class="javax.swing.JButton" name="likeButton1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Like/Dislike"/>
+            <Property name="text" type="java.lang.String" value="Like"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="likeButton1ActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="likeLabel1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="0 Likes"/>
           </Properties>
         </Component>
       </SubComponents>
