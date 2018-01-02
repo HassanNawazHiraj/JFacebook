@@ -1,31 +1,29 @@
 package gui;
 
-import java.util.Date;
-import javax.swing.JFrame;
 /**
  *
  * @author hassan
  */
-public class createPostWindow extends javax.swing.JFrame {
-
-    private gui.mainWindow previousWindow;
-    private pojos.Users posterUser;
-    private int fetchId;
-    private int postType;
-
+import java.util.Date;
+import javax.swing.JFrame;
+import pojos.Comments;
+import pojos.Users;
+public class createCommentWindow extends javax.swing.JFrame {
+    private JFrame previousWindow;
+    private Users logedUser;
+    private int post_id;
     /**
-     * Creates new form createPostWindow
+     * Creates new form createCommentWindow
      */
-    public createPostWindow() {
+    public createCommentWindow() {
         initComponents();
     }
-
-    public createPostWindow(JFrame refForm, pojos.Users poster, int fetchid, int postType) {
+    
+    public createCommentWindow(JFrame frm, Users logedUser, int post_id) {
         this();
-        previousWindow = (gui.mainWindow) refForm;
-        posterUser = poster;
-        fetchId = fetchid;
-        this.postType = postType;
+        previousWindow = frm;
+        this.logedUser = logedUser;
+        this.post_id = post_id;
     }
 
     /**
@@ -38,30 +36,18 @@ public class createPostWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        postText = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        commentMessageText = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel1.setText("Create a new Post");
+        jLabel1.setText("Create a new Comment");
 
-        jLabel2.setText("Post on : Your own profile");
-
-        postText.setColumns(20);
-        postText.setRows(5);
-        jScrollPane1.setViewportView(postText);
-
-        jButton1.setText("post");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+        jLabel3.setText("max characters 300");
 
         jButton2.setText("cancel");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -70,7 +56,16 @@ public class createPostWindow extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("max characters 300");
+        jButton1.setText("post");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        commentMessageText.setColumns(20);
+        commentMessageText.setRows(5);
+        jScrollPane1.setViewportView(commentMessageText);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -81,13 +76,11 @@ public class createPostWindow extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(jLabel1)
+                        .addGap(0, 127, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 178, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -99,13 +92,11 @@ public class createPostWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
                     .addComponent(jButton2)
+                    .addComponent(jButton1)
                     .addComponent(jLabel3))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -116,20 +107,18 @@ public class createPostWindow extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (previousWindow != null) {
             previousWindow.setVisible(true);
-            //previousWindow.refreshPanels();
             this.dispose();
         } else {
             this.dispose();
         }
-
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (postText.getText().chars().count() > 300) {
-            javax.swing.JOptionPane.showMessageDialog(null, "Only 300 Characters allowed. (" + postText.getText().chars().count() + " used)", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        if (commentMessageText.getText().chars().count() > 300) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Only 300 Characters allowed. (" + commentMessageText.getText().chars().count() + " used)", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
 
         } else {
-            if (models.PostsModel.addPost(new pojos.Posts(posterUser.getId(), fetchId, postText.getText(), new Date(), postType))) {
+            if (models.CommentsModel.addComment(new Comments(logedUser.getId(), commentMessageText.getText(), post_id, new Date()))) {
                 previousWindow.setVisible(true);
                 this.dispose();
             } else {
@@ -156,31 +145,30 @@ public class createPostWindow extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(createPostWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createCommentWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(createPostWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createCommentWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(createPostWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createCommentWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(createPostWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createCommentWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new createPostWindow().setVisible(true);
+                new createCommentWindow().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea commentMessageText;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea postText;
     // End of variables declaration//GEN-END:variables
 }

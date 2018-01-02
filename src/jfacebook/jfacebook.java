@@ -2,6 +2,8 @@
  * Made By : Hassan Nawaz
  * All Rights Reserved
  */
+
+//1=wall, 2=group, 3=page, 4=comment
 package jfacebook;
 import connection.dbtest;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;

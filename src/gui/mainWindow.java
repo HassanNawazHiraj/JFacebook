@@ -4,9 +4,17 @@
  */
 package gui;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import models.LikesModel;
+import models.PostsModel;
 import models.UsersModel;
+import pojos.Friends;
+import pojos.Posts;
 import pojos.Users;
 
 /**
@@ -16,11 +24,12 @@ import pojos.Users;
 public class mainWindow extends javax.swing.JFrame {
 
     Users logedUser;
+    List<Friends> friendList;
+    DefaultListModel<String> friendListModel = new DefaultListModel<>();
     //  int nextPage = 0;
     int currentPage = 0;
     // boolean nextPagePossible=false;
     List currentFetechedPosts;
-    private boolean skipbool = false;
 
     /**
      * Creates new form mainWindow
@@ -28,7 +37,26 @@ public class mainWindow extends javax.swing.JFrame {
     public mainWindow() {
         initComponents();
         this.setTitle("Main Window");
+        this.addComponentListener(new ComponentAdapter() {
+           // public void componentHidden(ComponentEvent e) {
+                /* code run when component hidden*/
+           // }
 
+            @Override
+            public void componentShown(ComponentEvent e) {
+                loadFirstPage();
+            }
+        });
+         friendsListBox.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent arg0) {
+                if (!arg0.getValueIsAdjusting()) {
+                  System.out.println(friendsListBox.getSelectedValue().toString() + "Clicked");
+                  //open ali profile
+                }
+            }
+        });
     }
 
     public mainWindow(Users user) {
@@ -36,6 +64,7 @@ public class mainWindow extends javax.swing.JFrame {
         logedUser = user;
         fullnameLabel.setText(logedUser.getFirstName() + " " + logedUser.getLastName());
         loadFirstPage();
+        populateFriends();
         backButton.setVisible(false);
         nextButton.setVisible(true);
     }
@@ -61,6 +90,7 @@ public class mainWindow extends javax.swing.JFrame {
                 pageLabel.setText("Last Page");
             } else {
                 // nextPagePossible = true;
+                if (!(models.PostsModel.getPosts(logedUser.getId(), 1, 1) == null));
                 nextButton.setVisible(true);
                 populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
                 populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
@@ -115,6 +145,17 @@ public class mainWindow extends javax.swing.JFrame {
     private boolean morePosts() {
         List l = models.PostsModel.getPosts(logedUser.getId(), 1, currentPage + 1);
         return l != null;
+    }
+
+    public void setLikeText(int postNumber, String likeButtonText) {
+        switch (postNumber) {
+            case 0:
+                likeButton.setText(likeButtonText);
+                break;
+            case 1:
+                likeButton1.setText(likeButtonText);
+
+        }
     }
 
     private void loadProfilePosts(boolean directionFoward) {
@@ -184,17 +225,63 @@ public class mainWindow extends javax.swing.JFrame {
         }
     }
 
+    public void refreshPanels() {
+        loadFirstPage();
+        System.out.println("executed");
+    }
+
     private void populatePostPanel(pojos.Posts p) {
         postTittleLabel.setText(UsersModel.getUser(p.getUserId()).getFullName());
         postLabel.setText("<html>" + p.getBody() + "</html>");
         dateLabel.setText(p.getPostDate().toString());
         if (!(p.getLikes() == null)) {
             likeLabel.setText(p.getLikes().size() + " Likes");
+            System.out.println(p.getLikes());
+        } else {
+            likeLabel.setText("0 Likes");
         }
         boolean hasUserLikedPost = LikesModel.hasUserLikedPost(logedUser.getId(), p.getId(),
                 p.getPostType());
         //    System.out.println(p.getLikes());
-       if  (hasUserLikedPost) likeButton.setText("Liked"); else likeButton.setText("Like");
+        if (hasUserLikedPost) {
+            likeButton.setText("Liked");
+        } else {
+            likeButton.setText("Like");
+        }
+    }
+
+    private void populateFriends() {
+        friendsListBox.removeAll();
+        friendList = models.FriendsModel.getFriends(logedUser.getId());
+        for(Friends f: friendList) {
+            friendListModel.addElement(f.getFriendData().getFullName());
+        }
+        friendsListBox.setModel(friendListModel);
+    }
+//    private void refreshLikes(int panelNumber, int) {
+//     //   pojos.Posts newPost = PostsModel.getPost(p.getId(), p.getPostType());
+//        //System.out.println(p.getId());
+//       // if (!(p.getLikes() == null)) {
+//         //   likeLabel.setText(p.getLikes().size() + " Likes");
+//         if(increase) {
+//             
+//         setLikesNumber(panelNumber, newPost.getLikes().size());
+//         }  
+//            //System.out.println(p.getLikes());
+//       // } else {
+//            
+//         //   setLikesNumber(panelNumber, 0);
+//       // }
+//    }
+    private void setLikesNumber(int panelNumber, int likes) {
+        switch (panelNumber) {
+            case 0:
+                likeLabel.setText(likes + " Likes");
+                break;
+            case 1:
+                likeLabel1.setText(likes + " Likes");
+
+        }
     }
 
     private void populatePostPanel1(pojos.Posts p) {
@@ -207,10 +294,14 @@ public class mainWindow extends javax.swing.JFrame {
             likeLabel1.setText("0 Likes");
         }
         boolean hasUserLikedPost = LikesModel.hasUserLikedPost(logedUser.getId(), p.getId(),
-                 p.getPostType());
+                p.getPostType());
         //  System.out.println(p.getLikes());
-        
-       if  (hasUserLikedPost) likeButton1.setText("Liked"); else likeButton1.setText("Like");
+
+        if (hasUserLikedPost) {
+            likeButton1.setText("Liked");
+        } else {
+            likeButton1.setText("Like");
+        }
     }
 
     /**
@@ -224,7 +315,7 @@ public class mainWindow extends javax.swing.JFrame {
 
         fullnameLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        friendsListBox = new javax.swing.JList<>();
         jLabel2 = new javax.swing.JLabel();
         yourWallLabel = new javax.swing.JLabel();
         postPanel = new javax.swing.JPanel();
@@ -234,6 +325,7 @@ public class mainWindow extends javax.swing.JFrame {
         commentsButton = new javax.swing.JButton();
         likeButton = new javax.swing.JButton();
         likeLabel = new javax.swing.JLabel();
+        deleteButton = new javax.swing.JButton();
         postPanel1 = new javax.swing.JPanel();
         postTittleLabel1 = new javax.swing.JLabel();
         postLabel1 = new javax.swing.JLabel();
@@ -241,6 +333,7 @@ public class mainWindow extends javax.swing.JFrame {
         commentsButton1 = new javax.swing.JButton();
         likeButton1 = new javax.swing.JButton();
         likeLabel1 = new javax.swing.JLabel();
+        deleteButton1 = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
         pageLabel = new javax.swing.JLabel();
@@ -252,14 +345,14 @@ public class mainWindow extends javax.swing.JFrame {
         fullnameLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         fullnameLabel.setText("<firstname + lastname>");
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        friendsListBox.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(friendsListBox);
 
-        jLabel2.setText("Friends Online :");
+        jLabel2.setText("Your Friends :");
 
         yourWallLabel.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         yourWallLabel.setText("Your Wall");
@@ -293,6 +386,13 @@ public class mainWindow extends javax.swing.JFrame {
 
         likeLabel.setText("0 Likes");
 
+        deleteButton.setText("Delete Post");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout postPanelLayout = new javax.swing.GroupLayout(postPanel);
         postPanel.setLayout(postPanelLayout);
         postPanelLayout.setHorizontalGroup(
@@ -305,11 +405,13 @@ public class mainWindow extends javax.swing.JFrame {
                         .addGroup(postPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(postTittleLabel)
                             .addComponent(dateLabel)
+                            .addComponent(likeLabel)
                             .addGroup(postPanelLayout.createSequentialGroup()
                                 .addComponent(commentsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(likeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(likeLabel))
+                                .addComponent(likeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -327,7 +429,8 @@ public class mainWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(postPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(commentsButton)
-                    .addComponent(likeButton))
+                    .addComponent(likeButton)
+                    .addComponent(deleteButton))
                 .addContainerGap())
         );
 
@@ -360,6 +463,13 @@ public class mainWindow extends javax.swing.JFrame {
 
         likeLabel1.setText("0 Likes");
 
+        deleteButton1.setText("Delete Post");
+        deleteButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout postPanel1Layout = new javax.swing.GroupLayout(postPanel1);
         postPanel1.setLayout(postPanel1Layout);
         postPanel1Layout.setHorizontalGroup(
@@ -372,11 +482,13 @@ public class mainWindow extends javax.swing.JFrame {
                         .addGroup(postPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(postTittleLabel1)
                             .addComponent(dateLabel1)
+                            .addComponent(likeLabel1)
                             .addGroup(postPanel1Layout.createSequentialGroup()
                                 .addComponent(commentsButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(likeButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(likeLabel1))
+                                .addComponent(likeButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(deleteButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -394,7 +506,8 @@ public class mainWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(postPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(commentsButton1)
-                    .addComponent(likeButton1))
+                    .addComponent(likeButton1)
+                    .addComponent(deleteButton1))
                 .addContainerGap())
         );
 
@@ -486,11 +599,16 @@ public class mainWindow extends javax.swing.JFrame {
 
     private void commentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentsButtonActionPerformed
         // TODO add your handling code here:
+        viewCommentWindow w = new viewCommentWindow(this, logedUser, (Posts) currentFetechedPosts.get(0), 0);
+        w.setVisible(true);
+        this.setVisible(false);
 
     }//GEN-LAST:event_commentsButtonActionPerformed
 
     private void commentsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentsButton1ActionPerformed
-        // TODO add your handling code here:
+        viewCommentWindow w = new viewCommentWindow(this, logedUser, (Posts) currentFetechedPosts.get(1), 1);
+        w.setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_commentsButton1ActionPerformed
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
@@ -519,6 +637,30 @@ public class mainWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_likeButton1ActionPerformed
 
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        if (PostsModel.deletePost(((Posts) currentFetechedPosts.get(0)).getId())) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Post was deleted", "Delete Post", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            // previousWindow.setVisible(true);
+            loadFirstPage();
+            // this.dispose();
+        } else {
+
+            javax.swing.JOptionPane.showMessageDialog(null, "There was an error while deleting this post", "Delete Post", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void deleteButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButton1ActionPerformed
+        if (PostsModel.deletePost(((Posts) currentFetechedPosts.get(1)).getId())) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Post was deleted", "Delete Post", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            // previousWindow.setVisible(true);
+            loadFirstPage();
+            // this.dispose();
+        } else {
+
+            javax.swing.JOptionPane.showMessageDialog(null, "There was an error while deleting this post", "Delete Post", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_deleteButton1ActionPerformed
+
     private boolean toggleLike(int postNumber) {
         pojos.Posts p;
         boolean buttonState = false;
@@ -541,22 +683,37 @@ public class mainWindow extends javax.swing.JFrame {
             if (!(LikesModel.removeLike(new pojos.Likes(logedUser.getId(), p.getId(), p.getPostType())))) {
                 return false;
             }
+            if (p.getLikes() == null) {
 
+                setLikesNumber(postNumber, 0);
+            } else {
+
+                setLikesNumber(postNumber, p.getLikes().size() - 1);
+            }
         } else {
             if (!(LikesModel.addLike(new pojos.Likes(logedUser.getId(), p.getId(), p.getPostType())))) {
                 return false;
+            }
+            if (p.getLikes() == null) {
+
+                setLikesNumber(postNumber, 1);
+            } else {
+
+                setLikesNumber(postNumber, p.getLikes().size());
             }
         }
 
         switch (postNumber) {
             case 0:
                 likeButton.setText((buttonState) ? "Like" : "Liked");
+
                 break;
             case 1:
                 likeButton1.setText((buttonState) ? "Like" : "Liked");
         }
 
         // }
+        // refreshLikes(p, postNumber);
         return true;
     }
 
@@ -601,10 +758,12 @@ public class mainWindow extends javax.swing.JFrame {
     private javax.swing.JButton commentsButton1;
     private javax.swing.JLabel dateLabel;
     private javax.swing.JLabel dateLabel1;
+    private javax.swing.JButton deleteButton;
+    private javax.swing.JButton deleteButton1;
+    private javax.swing.JList<String> friendsListBox;
     private javax.swing.JLabel fullnameLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton likeButton;
     private javax.swing.JButton likeButton1;
