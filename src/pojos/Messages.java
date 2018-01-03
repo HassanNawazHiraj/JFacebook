@@ -13,6 +13,15 @@ public class Messages  implements java.io.Serializable {
      private int fromId;
      private int toId;
      private String message;
+     private Users fromUser;
+
+    public Users getFromUser() {
+        return fromUser;
+    }
+
+    public void setFromUser(Users fromUser) {
+        this.fromUser = fromUser;
+    }
 
     public Messages() {
     }
@@ -51,6 +60,12 @@ public class Messages  implements java.io.Serializable {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return "Messages{" + "id=" + id + ", fromId=" + fromId + ", toId=" + toId + ", message=" + message + ", fromUser=" + fromUser + '}';
+    }
+    
 
 
 
