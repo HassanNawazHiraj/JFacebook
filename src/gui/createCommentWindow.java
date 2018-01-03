@@ -24,6 +24,7 @@ public class createCommentWindow extends javax.swing.JFrame {
         previousWindow = frm;
         this.logedUser = logedUser;
         this.post_id = post_id;
+        System.out.println(logedUser);
     }
 
     /**

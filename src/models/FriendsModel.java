@@ -84,6 +84,45 @@ public class FriendsModel {
         return true;
     }
 
+    public static boolean friendExists(int user_id, int send_to_user_id) {
+        Session session = Controller.getSessionFactory().openSession();
+        Transaction tx = null;
+        //  int id = 0;
+        List list = null;
+        try {
+            tx = session.beginTransaction();
+            //get post data
+            Query q = session.createQuery("From Friends where user_id=:user_id and friend_id=:friend_id");
+            q.setParameter("user_id", user_id);
+            q.setParameter("friend_id", send_to_user_id);
+            list = q.list();
+
+            if (list.size() > 0) {
+                // add user data
+                tx.commit();
+                session.close();
+                return true;
+            } else {
+                tx.commit();
+                session.close();
+                return false;
+            }
+
+            //  pojos.Users user = new pojos.Users("Ali", "Nawaz", "alinawazsolid", "128", "alinawazsolid@gmail.com", new Date(1980-1900, 4, 3), new Date(1960-1900, 2, 3, 12, 0, 0));
+            // id = (int) session.save(u);
+           // tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+
+            //e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return false;
+    }
+    
     public static boolean friendRequestExists(int user_id, int send_to_user_id) {
         Session session = Controller.getSessionFactory().openSession();
         Transaction tx = null;
@@ -124,6 +163,9 @@ public class FriendsModel {
     }
     
     public static boolean addFriend(int user_id, int send_to_user_id) {
+        if(friendExists(user_id, send_to_user_id)) {
+            return false;
+        }
           Session session = Controller.getSessionFactory().openSession();
         Transaction tx = null;
         int id = 0;
@@ -132,6 +174,8 @@ public class FriendsModel {
 
             //  pojos.Users user = new pojos.Users("Ali", "Nawaz", "alinawazsolid", "128", "alinawazsolid@gmail.com", new Date(1980-1900, 4, 3), new Date(1960-1900, 2, 3, 12, 0, 0));
             pojos.Friends f = new pojos.Friends(user_id, send_to_user_id);
+            pojos.Friends f2 = new pojos.Friends(send_to_user_id, user_id);
+            session.save(f2);
             id = (int) session.save(f);
             tx.commit();
         } catch (HibernateException e) {

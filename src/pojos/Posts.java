@@ -19,7 +19,8 @@ public class Posts implements java.io.Serializable {
     private List<pojos.Users> likes;
 
     public List<Users> getLikes() {
-        return likes;
+        List<Users> l = models.LikesModel.getLikes(postType, id);
+        return l;
     }
 
     public void setLikes(List<Users> likes) {

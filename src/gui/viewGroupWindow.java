@@ -1,22 +1,14 @@
-/*
- * Made By : Hassan Nawaz
- * All Rights Reserved
- */
 package gui;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.List;
-import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import models.FriendsModel;
+import models.GroupsModel;
 import models.LikesModel;
 import models.PostsModel;
 import models.UsersModel;
 import pojos.Friends;
+import pojos.Groups;
 import pojos.Posts;
 import pojos.Users;
 
@@ -24,71 +16,31 @@ import pojos.Users;
  *
  * @author hassan
  */
-public class mainWindow extends javax.swing.JFrame {
+public class viewGroupWindow extends javax.swing.JFrame {
 
-    Users logedUser;
-    List<Friends> friendList;
-    DefaultListModel<String> friendListModel = new DefaultListModel<>();
-    //  int nextPage = 0;
-    int currentPage = 0;
-    // boolean nextPagePossible=false;
-    List currentFetechedPosts;
-    boolean iniPhase = false;
+    private Groups currentGroup;
+    private JFrame previousWindow;
+    private Users logedUser;
+    private int currentPage;
+    private List currentFetchedGroupPosts;
 
     /**
-     * Creates new form mainWindow
+     * Creates new form viewGroupWindow
      */
-    public mainWindow() {
+    public viewGroupWindow() {
         initComponents();
-        this.setTitle("Main Window");
-        this.addComponentListener(new ComponentAdapter() {
-            // public void componentHidden(ComponentEvent e) {
-            /* code run when component hidden*/
-            // }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-                loadFirstPage();
-                populateFriends();
-                // System.out.println("Executed!");
-            }
-        });
-        friendsListBox.addListSelectionListener(new ListSelectionListener() {
-
-            @Override
-            public void valueChanged(ListSelectionEvent arg0) {
-                if (!arg0.getValueIsAdjusting()) {
-//                    System.out.println(friendsListBox.getSelectedValue().toString() + "Clicked");
-                    //   if (!(iniPhase)) {
-                    //System.out.println(friendsListBox.getSelectedIndex() + " | " + friendList.size());
-                    if (!(friendsListBox.getSelectedIndex() == -1)) {
-                        Users profileUser = friendList.get(friendsListBox.getSelectedIndex()).getFriendData();
-                        //  System.out.println(profileUser);
-                        viewProfileWindow vpw = new viewProfileWindow(profileUser, mainWindow.this, logedUser);
-                        System.out.println(logedUser);
-                        vpw.setVisible(true);
-                        friendsListBox.clearSelection();
-
-                        mainWindow.this.setVisible(false);
-                    }
-
-                    //     }    //open ali profile
-                }
-            }
-        });
     }
 
-    public mainWindow(Users user) {
-
+    public viewGroupWindow(Groups g, JFrame frm, Users u) {
         this();
-        iniPhase = true;
-        logedUser = user;
-        fullnameLabel.setText(logedUser.getFirstName() + " " + logedUser.getLastName());
-        loadFirstPage();
-        populateFriends();
-        backButton.setVisible(false);
-        iniPhase = false;
-        // nextButton.setVisible(true);
+        this.currentGroup = g;
+        this.previousWindow = frm;
+        groupNameLabel.setText(currentGroup.getGroupString());
+        this.logedUser = u;
+        if (!(g.getCreaterId() == logedUser.getId())) {
+            deleteGroupButton.setVisible(false);
+        }
+       // loadFirstPage();
     }
 
     private void loadFirstPage() {
@@ -96,8 +48,8 @@ public class mainWindow extends javax.swing.JFrame {
         nextButton.setVisible(false);
         currentPage = 0;
         pageLabel.setText("Page 1");
-        currentFetechedPosts = models.PostsModel.getPosts(logedUser.getId(), 1, 0);
-        if (currentFetechedPosts == null) {
+        currentFetchedGroupPosts = models.PostsModel.getPosts(currentGroup.getId(), 2, 0);
+        if (currentFetchedGroupPosts == null) {
             // no wall posts
             postPanel.setVisible(false);
             postPanel1.setVisible(false);
@@ -105,50 +57,45 @@ public class mainWindow extends javax.swing.JFrame {
             nextButton.setVisible(false);
             pageLabel.setText("No Posts");
         } else {
-            if (currentFetechedPosts.size() == 1) {
+            if (currentFetchedGroupPosts.size() == 1) {
                 //   nextPagePossible = false;
                 nextButton.setVisible(false);
-                populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
-                postPanel1.setVisible(false);
+                populatePostPanel((pojos.Posts) currentFetchedGroupPosts.get(0));
                 postPanel.setVisible(true);
+                postPanel1.setVisible(false);
                 pageLabel.setText("Last Page");
             } else {
                 // nextPagePossible = true;
-                if (!(models.PostsModel.getPosts(logedUser.getId(), 1, 1) == null)) {
+                if (!(models.PostsModel.getPosts(currentGroup.getId(), 2, 1) == null)) {
                     nextButton.setVisible(true);
 
                 }
-
                 postPanel.setVisible(true);
                 postPanel1.setVisible(true);
-                populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
-                populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
+                populatePostPanel((pojos.Posts) currentFetchedGroupPosts.get(0));
+                populatePostPanel1((pojos.Posts) currentFetchedGroupPosts.get(1));
             }
         }
     }
 
     private void nextPost() {
-        currentFetechedPosts = models.PostsModel.getPosts(logedUser.getId(), 1, currentPage + 1);
+        currentFetchedGroupPosts = models.PostsModel.getPosts(currentGroup.getId(), 2, currentPage + 1);
         currentPage += 1;
         pageLabel.setText("Page " + (currentPage + 1));
         backButton.setVisible(true);
 
-        if (currentFetechedPosts.size() == 1) {
+        if (currentFetchedGroupPosts.size() == 1) {
             //   nextPagePossible = false;
             nextButton.setVisible(false);
-            postPanel.setVisible(true);
-            populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
+            populatePostPanel((pojos.Posts) currentFetchedGroupPosts.get(0));
             postPanel1.setVisible(false);
             pageLabel.setText("Last Page");
         }
-        if (currentFetechedPosts.size() == 2) {
+        if (currentFetchedGroupPosts.size() == 2) {
             // nextPagePossible = true;
             nextButton.setVisible(true);
-
-            postPanel.setVisible(true);
-            postPanel1.setVisible(true);
-            populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
-            populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
+            populatePostPanel((pojos.Posts) currentFetchedGroupPosts.get(0));
+            populatePostPanel1((pojos.Posts) currentFetchedGroupPosts.get(1));
         }
         //check if more posts
         if (!morePosts()) {
@@ -160,14 +107,12 @@ public class mainWindow extends javax.swing.JFrame {
     }
 
     private void previousPost() {
-        currentFetechedPosts = models.PostsModel.getPosts(logedUser.getId(), 1, currentPage - 1);
+        currentFetchedGroupPosts = models.PostsModel.getPosts(currentGroup.getId(), 2, currentPage - 1);
         currentPage -= 1;
         pageLabel.setText("Page " + (currentPage + 1));
         nextButton.setVisible(true);
-        postPanel.setVisible(true);
-        postPanel1.setVisible(true);
-        populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
-        populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
+        populatePostPanel((pojos.Posts) currentFetchedGroupPosts.get(0));
+        populatePostPanel1((pojos.Posts) currentFetchedGroupPosts.get(1));
         postPanel.setVisible(true);
         postPanel1.setVisible(true);
         backButton.setVisible(true);
@@ -178,7 +123,7 @@ public class mainWindow extends javax.swing.JFrame {
     }
 
     private boolean morePosts() {
-        List l = models.PostsModel.getPosts(logedUser.getId(), 1, currentPage + 1);
+        List l = models.PostsModel.getPosts(currentGroup.getId(), 2, currentPage + 1);
         return l != null;
     }
 
@@ -193,83 +138,12 @@ public class mainWindow extends javax.swing.JFrame {
         }
     }
 
-    private void loadProfilePosts(boolean directionFoward) {
-
-        if (directionFoward) {
-            //if(fromNextButton && postPage==0)
-            // List x = currentFetechedPosts;
-            // if(skipbool){
-            //    postPage+=1;
-            //   skipbool=false;
-            // }
-            currentFetechedPosts = models.PostsModel.getPosts(logedUser.getId(), 1, currentPage);
-            // if(currentFetechedPosts.equals(x)){
-            //loadProfilePosts(true);
-            // System.out.println("equal");
-            // }
-            //   System.out.println(postPage);
-            if (currentFetechedPosts.size() == 2) {
-                //   nextPage += currentPage + 1;
-                //  pageLabel.setText("Page " + nextPage);
-                nextButton.setVisible(true);
-                populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
-                populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
-            } else {
-                //if (currentFetechedPosts.size() == 1) {
-                postPanel1.setVisible(false);
-                populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
-                //}
-
-                nextButton.setVisible(false);
-                pageLabel.setText("No more posts to show");
-                //nextPage = -1;
-            }
-
-            if (models.PostsModel.getPosts(logedUser.getId(), 1, currentPage + 1) == null) {
-                nextButton.setVisible(false);
-                pageLabel.setText("No more posts to show");
-            }
-        } else {
-            //  if (nextButton.isVisible()) {
-
-            currentFetechedPosts = models.PostsModel.getPosts(logedUser.getId(), 1, currentPage - 1);
-            populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
-            populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
-            //} else {
-
-            //currentFetechedPosts = models.PostsModel.getPosts(logedUser.getId(), 1, postPage - 2);
-            //populatePostPanel((pojos.Posts) currentFetechedPosts.get(0));
-            //  populatePostPanel1((pojos.Posts) currentFetechedPosts.get(1));
-            //}
-            // System.out.println(postPage);
-            // if(postPage != 1)
-            // postPage -=1;
-            currentPage -= 1;
-            //if(postPage ==0) skipbool=true;
-            //System.out.println("run"+postPage);
-            nextButton.setVisible(true);
-            postPanel1.setVisible(true);
-            postPanel.setVisible(true);
-            pageLabel.setText("Page " + (currentPage + 1));
-        }
-
-        if (currentPage == 0) {
-            backButton.setVisible(false);
-        } else {
-            backButton.setVisible(true);
-        }
-    }
-
-    public void refreshPanels() {
-        loadFirstPage();
-        System.out.println("executed");
-    }
-
     private void populatePostPanel(pojos.Posts p) {
-        if (!(p.getUserId() == logedUser.getId())) {
-            deleteButton.setVisible(false);
-        } else {
+        if (p.getUserId() == logedUser.getId() || logedUser.getId() == currentGroup.getCreaterId()) {
+            
             deleteButton.setVisible(true);
+        } else {
+            deleteButton.setVisible(false);
         }
         postTittleLabel.setText(UsersModel.getUser(p.getUserId()).getFullName());
         postLabel.setText("<html>" + p.getBody() + "</html>");
@@ -290,27 +164,6 @@ public class mainWindow extends javax.swing.JFrame {
         }
     }
 
-    private void populateFriends() {
-        friendsListBox.removeAll();
-        if (friendList != null) {
-            friendList.clear();
-        }
-        if (friendListModel != null) {
-            friendListModel.clear();
-            friendListModel.removeAllElements();
-            friendListModel = new DefaultListModel<>();
-        }
-        friendList = models.FriendsModel.getFriends(logedUser.getId());
-        if (!(friendList == null)) {
-            for (Friends f : friendList) {
-                friendListModel.addElement(f.getFriendData().getFullName());
-            }
-        }
-
-        friendsListBox.setModel(friendListModel);
-        friendsListBox.clearSelection();
-    }
-
     private void setLikesNumber(int panelNumber, int likes) {
         switch (panelNumber) {
             case 0:
@@ -323,10 +176,10 @@ public class mainWindow extends javax.swing.JFrame {
     }
 
     private void populatePostPanel1(pojos.Posts p) {
-        if (!(p.getUserId() == logedUser.getId())) {
-            deleteButton1.setVisible(false);
-        } else {
+        if (p.getUserId() == logedUser.getId() || logedUser.getId() == currentGroup.getCreaterId()) {
             deleteButton1.setVisible(true);
+        } else {
+            deleteButton1.setVisible(false);
         }
         postTittleLabel1.setText(UsersModel.getUser(p.getUserId()).getFullName());
         postLabel1.setText("<html>" + p.getBody() + "</html>");
@@ -347,6 +200,63 @@ public class mainWindow extends javax.swing.JFrame {
         }
     }
 
+    private boolean toggleLike(int postNumber) {
+        pojos.Posts p;
+        boolean buttonState = false;
+        // if(postNumber == 1) {
+
+        if (currentFetchedGroupPosts.get(postNumber) == null) {
+            return false;
+        } else {
+            p = (pojos.Posts) currentFetchedGroupPosts.get(postNumber);
+        }
+
+        switch (postNumber) {
+            case 0:
+                buttonState = (likeButton.getText().compareTo("Liked") == 0);
+                break;
+            case 1:
+                buttonState = (likeButton1.getText().compareTo("Liked") == 0);
+        }
+
+        if (buttonState) {
+            if (!(LikesModel.removeLike(new pojos.Likes(logedUser.getId(), p.getId(), p.getPostType())))) {
+                return false;
+            }
+            if (p.getLikes() == null) {
+
+                setLikesNumber(postNumber, 0);
+            } else {
+
+                setLikesNumber(postNumber, p.getLikes().size());
+            }
+        } else {
+            if (!(LikesModel.addLike(new pojos.Likes(logedUser.getId(), p.getId(), p.getPostType())))) {
+                return false;
+            }
+            if (p.getLikes() == null) {
+
+                setLikesNumber(postNumber, 1);
+            } else {
+
+                setLikesNumber(postNumber, p.getLikes().size());
+            }
+        }
+
+        switch (postNumber) {
+            case 0:
+                likeButton.setText((buttonState) ? "Like" : "Liked");
+
+                break;
+            case 1:
+                likeButton1.setText((buttonState) ? "Like" : "Liked");
+        }
+
+        // }
+        // refreshLikes(p, postNumber);
+        return true;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -356,11 +266,7 @@ public class mainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        fullnameLabel = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        friendsListBox = new javax.swing.JList<>();
-        jLabel2 = new javax.swing.JLabel();
-        yourWallLabel = new javax.swing.JLabel();
+        groupNameLabel = new javax.swing.JLabel();
         postPanel = new javax.swing.JPanel();
         postTittleLabel = new javax.swing.JLabel();
         postLabel = new javax.swing.JLabel();
@@ -377,37 +283,22 @@ public class mainWindow extends javax.swing.JFrame {
         likeButton1 = new javax.swing.JButton();
         likeLabel1 = new javax.swing.JLabel();
         deleteButton1 = new javax.swing.JButton();
-        nextButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
         pageLabel = new javax.swing.JLabel();
+        nextButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        deleteGroupButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(737, 471));
-        addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                refreshFriends(evt);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                reloadData(evt);
             }
         });
 
-        fullnameLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        fullnameLabel.setText("<firstname + lastname>");
-
-        friendsListBox.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(friendsListBox);
-
-        jLabel2.setText("Your Friends :");
-
-        yourWallLabel.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
-        yourWallLabel.setText("Your Wall");
+        groupNameLabel.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        groupNameLabel.setText("<Group Name >");
 
         postPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         postPanel.setAutoscrolls(true);
@@ -476,7 +367,7 @@ public class mainWindow extends javax.swing.JFrame {
                 .addComponent(dateLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(postLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(likeLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(postPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -541,7 +432,7 @@ public class mainWindow extends javax.swing.JFrame {
                                 .addComponent(likeButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(deleteButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 174, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         postPanel1Layout.setVerticalGroup(
@@ -553,7 +444,7 @@ public class mainWindow extends javax.swing.JFrame {
                 .addComponent(dateLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(postLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(likeLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(postPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -562,13 +453,6 @@ public class mainWindow extends javax.swing.JFrame {
                     .addComponent(deleteButton1))
                 .addContainerGap())
         );
-
-        nextButton.setText("Next");
-        nextButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nextButtonActionPerformed(evt);
-            }
-        });
 
         backButton.setText("Back");
         backButton.addActionListener(new java.awt.event.ActionListener() {
@@ -579,38 +463,36 @@ public class mainWindow extends javax.swing.JFrame {
 
         pageLabel.setText("Page 1");
 
-        jButton1.setText("Post your own Wall");
+        nextButton.setText("Next");
+        nextButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextButtonActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Back to Groups");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Groups");
+        jButton2.setText("Create post");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Pages");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+        deleteGroupButton.setText("Delete Group");
+        deleteGroupButton.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                GroupShown(evt);
             }
         });
-
-        jButton4.setText("Add Friend");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        deleteGroupButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jButton5.setText("Log Out");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                deleteGroupButtonActionPerformed(evt);
             }
         });
 
@@ -621,68 +503,47 @@ public class mainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fullnameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel2)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(postPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(postPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(185, 185, 185)
+                                .addComponent(pageLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(yourWallLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1)
+                        .addComponent(groupNameLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(deleteGroupButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(postPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(postPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(185, 185, 185)
-                        .addComponent(pageLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 192, Short.MAX_VALUE)
-                        .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addComponent(jButton1))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(fullnameLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5))
+                        .addContainerGap()
+                        .addComponent(groupNameLabel))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(yourWallLabel)
                         .addComponent(jButton1)
                         .addComponent(jButton2)
-                        .addComponent(jButton3)
-                        .addComponent(jButton4)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(10, 10, 10)
-                        .addComponent(jScrollPane1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(postPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(postPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(nextButton)
-                            .addComponent(backButton)
-                            .addComponent(pageLabel))
-                        .addGap(11, 11, 11)))
+                        .addComponent(deleteGroupButton)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(postPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(postPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(nextButton)
+                    .addComponent(backButton)
+                    .addComponent(pageLabel))
                 .addContainerGap())
         );
 
@@ -691,31 +552,10 @@ public class mainWindow extends javax.swing.JFrame {
 
     private void commentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentsButtonActionPerformed
         // TODO add your handling code here:
-        viewCommentWindow w = new viewCommentWindow(this, logedUser, (Posts) currentFetechedPosts.get(0), 0);
+        viewCommentWindow w = new viewCommentWindow(this, logedUser, (Posts) currentFetchedGroupPosts.get(0), 0);
         w.setVisible(true);
         this.setVisible(false);
-
     }//GEN-LAST:event_commentsButtonActionPerformed
-
-    private void commentsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentsButton1ActionPerformed
-        viewCommentWindow w = new viewCommentWindow(this, logedUser, (Posts) currentFetechedPosts.get(1), 1);
-        w.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_commentsButton1ActionPerformed
-
-    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
-        nextPost();
-    }//GEN-LAST:event_nextButtonActionPerformed
-
-    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        previousPost();
-    }//GEN-LAST:event_backButtonActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        createPostWindow c = new createPostWindow(this, logedUser, logedUser.getId(), 1);
-        c.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void likeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_likeButtonActionPerformed
         if (!toggleLike(0)) {
@@ -723,14 +563,8 @@ public class mainWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_likeButtonActionPerformed
 
-    private void likeButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_likeButton1ActionPerformed
-        if (!toggleLike(1)) {
-            System.out.println("Error while liking the post");
-        }
-    }//GEN-LAST:event_likeButton1ActionPerformed
-
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        if (PostsModel.deletePost(((Posts) currentFetechedPosts.get(0)).getId())) {
+        if (PostsModel.deletePost(((Posts) currentFetchedGroupPosts.get(0)).getId())) {
             javax.swing.JOptionPane.showMessageDialog(null, "Post was deleted", "Delete Post", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             // previousWindow.setVisible(true);
             loadFirstPage();
@@ -741,8 +575,20 @@ public class mainWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
 
+    private void commentsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentsButton1ActionPerformed
+        viewCommentWindow w = new viewCommentWindow(this, logedUser, (Posts) currentFetchedGroupPosts.get(1), 1);
+        w.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_commentsButton1ActionPerformed
+
+    private void likeButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_likeButton1ActionPerformed
+        if (!toggleLike(1)) {
+            System.out.println("Error while liking the post");
+        }
+    }//GEN-LAST:event_likeButton1ActionPerformed
+
     private void deleteButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButton1ActionPerformed
-        if (PostsModel.deletePost(((Posts) currentFetechedPosts.get(1)).getId())) {
+        if (PostsModel.deletePost(((Posts) currentFetchedGroupPosts.get(1)).getId())) {
             javax.swing.JOptionPane.showMessageDialog(null, "Post was deleted", "Delete Post", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             // previousWindow.setVisible(true);
             loadFirstPage();
@@ -753,103 +599,45 @@ public class mainWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_deleteButton1ActionPerformed
 
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        previousPost();
+    }//GEN-LAST:event_backButtonActionPerformed
+
+    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
+        nextPost();
+    }//GEN-LAST:event_nextButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        previousWindow.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        viewGroupListWindow g = new viewGroupListWindow(this, logedUser);
-        g.setVisible(true);
+        createPostWindow c = new createPostWindow(this, logedUser, currentGroup.getId(), 2);
+        c.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        String friendName = JOptionPane.showInputDialog("Enter your friend's username");
-        Users send_to;
-        send_to = UsersModel.getUser(friendName);
-        if (send_to == null) {
-            JOptionPane.showMessageDialog(null, "User not found!");
+    private void reloadData(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_reloadData
+     loadFirstPage();
+        // TODO add your handling code here:
+    }//GEN-LAST:event_reloadData
+
+    private void deleteGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteGroupButtonActionPerformed
+        if(GroupsModel.deleteGroup(currentGroup.getId())) {
+            JOptionPane.showMessageDialog(null, "Group Deleted!");
+            previousWindow.setVisible(true);
+            this.dispose();
         } else {
-            if (FriendsModel.addFriend(logedUser.getId(), send_to.getId())) {
-                JOptionPane.showMessageDialog(null, "Added as friend");
-                populateFriends();
-            } else {
-                JOptionPane.showMessageDialog(null, "Couldn't add as friend");
-            }
+            JOptionPane.showMessageDialog(null, "Couldn't delete Group");
         }
-    }//GEN-LAST:event_jButton4ActionPerformed
+        
+    }//GEN-LAST:event_deleteGroupButtonActionPerformed
 
-    private void refreshFriends(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_refreshFriends
+    private void GroupShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_GroupShown
+        
 
-        populateFriends();
-    }//GEN-LAST:event_refreshFriends
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        viewPageListWindow p = new viewPageListWindow(this, logedUser);
-        p.setVisible(true);
-        this.setVisible(false);
-
-
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        loginWindow l = new loginWindow();
-        l.setVisible(true);
-        this.dispose();
-
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private boolean toggleLike(int postNumber) {
-        pojos.Posts p;
-        boolean buttonState = false;
-        // if(postNumber == 1) {
-        if (currentFetechedPosts.get(postNumber) == null) {
-            return false;
-        } else {
-            p = (pojos.Posts) currentFetechedPosts.get(postNumber);
-        }
-
-        switch (postNumber) {
-            case 0:
-                buttonState = (likeButton.getText().compareTo("Liked") == 0);
-                break;
-            case 1:
-                buttonState = (likeButton1.getText().compareTo("Liked") == 0);
-        }
-
-        if (buttonState) {
-            if (!(LikesModel.removeLike(new pojos.Likes(logedUser.getId(), p.getId(), p.getPostType())))) {
-                return false;
-            }
-            if (p.getLikes() == null) {
-
-                setLikesNumber(postNumber, 0);
-            } else {
-
-                setLikesNumber(postNumber, p.getLikes().size());
-            }
-        } else {
-            if (!(LikesModel.addLike(new pojos.Likes(logedUser.getId(), p.getId(), p.getPostType())))) {
-                return false;
-            }
-            if (p.getLikes() == null) {
-
-                setLikesNumber(postNumber, 1);
-            } else {
-
-                setLikesNumber(postNumber, p.getLikes().size());
-            }
-        }
-
-        switch (postNumber) {
-            case 0:
-                likeButton.setText((buttonState) ? "Like" : "Liked");
-
-                break;
-            case 1:
-                likeButton1.setText((buttonState) ? "Like" : "Liked");
-        }
-
-        // }
-        // refreshLikes(p, postNumber);
-        return true;
-    }
+    }//GEN-LAST:event_GroupShown
 
     /**
      * @param args the command line arguments
@@ -868,20 +656,20 @@ public class mainWindow extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(mainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(viewGroupWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(mainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(viewGroupWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(mainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(viewGroupWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(mainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(viewGroupWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new mainWindow().setVisible(true);
+                new viewGroupWindow().setVisible(true);
             }
         });
     }
@@ -894,15 +682,10 @@ public class mainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel dateLabel1;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton deleteButton1;
-    private javax.swing.JList<String> friendsListBox;
-    private javax.swing.JLabel fullnameLabel;
+    private javax.swing.JButton deleteGroupButton;
+    private javax.swing.JLabel groupNameLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton likeButton;
     private javax.swing.JButton likeButton1;
     private javax.swing.JLabel likeLabel;
@@ -915,6 +698,5 @@ public class mainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel postPanel1;
     private javax.swing.JLabel postTittleLabel;
     private javax.swing.JLabel postTittleLabel1;
-    private javax.swing.JLabel yourWallLabel;
     // End of variables declaration//GEN-END:variables
 }

@@ -33,9 +33,9 @@ public class viewCommentWindow extends javax.swing.JFrame {
         initComponents();
         this.setTitle("View Comment");
         this.addComponentListener(new ComponentAdapter() {
-           // public void componentHidden(ComponentEvent e) {
-                /* code run when component hidden*/
-           // }
+            // public void componentHidden(ComponentEvent e) {
+            /* code run when component hidden*/
+            // }
 
             @Override
             public void componentShown(ComponentEvent e) {
@@ -52,6 +52,7 @@ public class viewCommentWindow extends javax.swing.JFrame {
         populatePostPanel(currentPost);
         this.postNumber = postNumber;
         loadCommentsFirstPage();
+        System.out.println(logedUser);
     }
 
     private void loadCommentsFirstPage() {
@@ -145,6 +146,9 @@ public class viewCommentWindow extends javax.swing.JFrame {
         dateLabel.setText(p.getPostDate().toString());
         if (!(p.getLikes() == null)) {
             likeLabel.setText(p.getLikes().size() + " Likes");
+        } else {
+            likeLabel.setText("0 Likes");
+
         }
         boolean hasUserLikedPost = LikesModel.hasUserLikedPost(logedUser.getId(), p.getId(),
                 p.getPostType());
@@ -159,9 +163,9 @@ public class viewCommentWindow extends javax.swing.JFrame {
     private boolean toggleLike(Posts p) {
         //  pojos.Posts p;
         boolean buttonState;
-        gui.mainWindow mainwindow = (gui.mainWindow) previousWindow;
-        // if(postNumber == 1) {
+        JFrame mainwindow;
 
+        // if(postNumber == 1) {
         buttonState = (likeButton.getText().compareTo("Liked") == 0);
 
         if (buttonState) {
@@ -177,8 +181,20 @@ public class viewCommentWindow extends javax.swing.JFrame {
 
         }
         likeButton.setText((buttonState) ? "Like" : "Liked");
-        mainwindow.setLikeText(postNumber, (buttonState) ? "Like" : "Liked");
-
+        // mainwindow.setLikeText(postNumber, (buttonState) ? "Like" : "Liked");
+//        if (previousWindow instanceof gui.mainWindow) {
+//            ((gui.mainWindow) previousWindow).setLikeText(postNumber, (buttonState) ? "Like" : "Liked");
+//        }
+//        // } else {
+//        if (previousWindow instanceof gui.viewProfileWindow) {
+//            ((gui.viewProfileWindow) previousWindow).setLikeText(postNumber, (buttonState) ? "Like" : "Liked");
+//        }
+//        
+//        if(previousWindow instanceof gui.viewCommentWindow) {
+//                ((gui.viewCommentWindow) previousWindow).setLikeText(postNumber, (buttonState) ? "Like" : "Liked");
+//      
+//        }
+        //  }
         // }
         return true;
     }
@@ -622,7 +638,7 @@ public class viewCommentWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void likeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_likeButtonActionPerformed
-        if (!toggleLike(currentPost)) {
+        if (!toggleLikeForPost()) {
             System.out.println("Error while liking the post");
         }
     }//GEN-LAST:event_likeButtonActionPerformed
@@ -639,16 +655,60 @@ public class viewCommentWindow extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private boolean toggleLikeForPost() {
+
+        boolean buttonState = false;
+        // if(postNumber == 1) {
+        if (currentPost == null) {
+            return false;
+        }
+
+        buttonState = (likeButton.getText().compareTo("Liked") == 0);
+
+//rewrite this function
+        if (buttonState) {
+            if (!(LikesModel.removeLike(new pojos.Likes(logedUser.getId(), currentPost.getId(), currentPost.getPostType())))) {
+                return false;
+            }
+
+            if (currentPost.getLikes() == null) {
+                likeLabel.setText("0 Likes");
+            } else {
+
+                likeLabel.setText((currentPost.getLikes().size()) + " Likes");
+            }
+
+        } else {
+            if (!(LikesModel.addLike(new pojos.Likes(logedUser.getId(), currentPost.getId(), currentPost.getPostType())))) {
+                return false;
+            }
+            if (currentPost.getLikes() == null) {
+
+                likeLabel.setText("1 Likes");
+            } else {
+                
+                likeLabel.setText((currentPost.getLikes().size()) + " Likes");
+            }
+        }
+
+       
+                likeButton.setText((buttonState) ? "Like" : "Liked");
+                
+
+        // }
+        return true;
+    }
+
     private boolean toggleLike(int commentNumber) {
         Comments c;
-        
+
         boolean buttonState = false;
         // if(postNumber == 1) {
         if (currentfetchedComments.get(commentNumber) == null) {
             return false;
         } else {
             c = (Comments) currentfetchedComments.get(commentNumber);
-            
+
         }
 
         switch (commentNumber) {
@@ -666,33 +726,33 @@ public class viewCommentWindow extends javax.swing.JFrame {
             if (!(LikesModel.removeLike(new pojos.Likes(logedUser.getId(), ((Comments) currentfetchedComments.get(commentNumber)).getId(), 4)))) {
                 return false;
             }
-             if (c.getLikes() == null) {
+            if (c.getLikes() == null) {
 
-                setLikesNumber(postNumber, 0);
+                setLikesNumber(commentNumber, 0);
             } else {
 
-                setLikesNumber(postNumber, c.getLikes().size() - 1);
+                setLikesNumber(commentNumber, c.getLikes().size() - 1);
             }
 
         } else {
             if (!(LikesModel.addLike(new pojos.Likes(logedUser.getId(), ((Comments) currentfetchedComments.get(commentNumber)).getId(), 4)))) {
                 return false;
             }
-               if (c.getLikes() == null) {
+            if (c.getLikes() == null) {
 
-                setLikesNumber(postNumber, 1);
+                setLikesNumber(commentNumber, 1);
             } else {
-
-                setLikesNumber(postNumber, c.getLikes().size());
+                setLikesNumber(commentNumber, c.getLikes().size());
             }
         }
 
-        switch (postNumber) {
+        switch (commentNumber) {
             case 0:
                 commentLikeButton.setText((buttonState) ? "Like" : "Liked");
                 break;
             case 1:
                 commentLikeButton1.setText((buttonState) ? "Like" : "Liked");
+                break;
             case 2:
                 commentLikeButton2.setText((buttonState) ? "Like" : "Liked");
         }
@@ -700,7 +760,8 @@ public class viewCommentWindow extends javax.swing.JFrame {
         // }
         return true;
     }
-       private void setLikesNumber(int panelNumber, int likes) {
+
+    private void setLikesNumber(int panelNumber, int likes) {
         switch (panelNumber) {
             case 0:
                 commentLikeLabel.setText(likes + " Likes");
@@ -765,9 +826,9 @@ public class viewCommentWindow extends javax.swing.JFrame {
     private boolean deleteComment(int postId) {
         if (CommentsModel.deleteComment(postId)) {
             javax.swing.JOptionPane.showMessageDialog(null, "Comment was deleted", "Delete Comment", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-             loadCommentsFirstPage();
+            loadCommentsFirstPage();
             return true;
-           
+
         } else {
 
             javax.swing.JOptionPane.showMessageDialog(null, "There was an error while deleting this comment", "Delete Comment", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -778,8 +839,8 @@ public class viewCommentWindow extends javax.swing.JFrame {
 
     public boolean deleteCommentNumber(int commentNumber) {
         return deleteComment(((Comments) currentfetchedComments.get(commentNumber)).getId());
-      // System.out.println(((Comments) currentfetchedComments.get(commentNumber)).getMessage());
-       //return false;
+        // System.out.println(((Comments) currentfetchedComments.get(commentNumber)).getMessage());
+        //return false;
     }
 
     public void setLikeText(int postNumber, String likeButtonText) {
@@ -796,15 +857,23 @@ public class viewCommentWindow extends javax.swing.JFrame {
     }
 
     private void commentLikeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentLikeButtonActionPerformed
-        toggleLike(0);
+        if (!(toggleLike(0))) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Couldn't like this comment", "Like", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_commentLikeButtonActionPerformed
 
     private void commentLikeButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentLikeButton1ActionPerformed
-        toggleLike(1);
+
+        if (!(toggleLike(1))) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Couldn't like this comment", "Like", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_commentLikeButton1ActionPerformed
 
     private void commentLikeButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentLikeButton2ActionPerformed
-        toggleLike(2);
+
+        if (!(toggleLike(2))) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Couldn't like this comment", "Like", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_commentLikeButton2ActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed

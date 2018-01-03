@@ -8,7 +8,7 @@ import javax.swing.JFrame;
  */
 public class createPostWindow extends javax.swing.JFrame {
 
-    private gui.mainWindow previousWindow;
+    private JFrame previousWindow;
     private pojos.Users posterUser;
     private int fetchId;
     private int postType;
@@ -18,11 +18,12 @@ public class createPostWindow extends javax.swing.JFrame {
      */
     public createPostWindow() {
         initComponents();
+        
     }
 
     public createPostWindow(JFrame refForm, pojos.Users poster, int fetchid, int postType) {
         this();
-        previousWindow = (gui.mainWindow) refForm;
+        previousWindow =  refForm;
         posterUser = poster;
         fetchId = fetchid;
         this.postType = postType;

@@ -29,6 +29,7 @@ public class Comments implements java.io.Serializable {
     
 
     public Comments() {
+        
     }
 
     public Comments(int userId, String message, int postId, Date postDate) {

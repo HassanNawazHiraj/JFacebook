@@ -47,9 +47,12 @@ Contributor(s):
     <property name="hibernate.connection.username">root</property>
     <mapping resource="pojos/Posts.hbm.xml"/>
     <mapping resource="pojos/Friendrequests.hbm.xml"/>
+    <mapping resource="pojos/Pages.hbm.xml"/>
     <mapping resource="pojos/Likes.hbm.xml"/>
     <mapping resource="pojos/Comments.hbm.xml"/>
     <mapping resource="pojos/Users.hbm.xml"/>
+    <mapping resource="pojos/Groups.hbm.xml"/>
     <mapping resource="pojos/Friends.hbm.xml"/>
+    <mapping resource="pojos/Messages.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

@@ -41,10 +41,13 @@ Contributor(s):
 -->
 <hibernate-reverse-engineering>
   <schema-selection match-catalog="facebook"/>
-  <table-filter match-name="users"/>
-  <table-filter match-name="comments"/>
-  <table-filter match-name="posts"/>
+  <table-filter match-name="friends"/>
+  <table-filter match-name="groups"/>
+  <table-filter match-name="pages"/>
+  <table-filter match-name="messages"/>
   <table-filter match-name="likes"/>
   <table-filter match-name="friendrequests"/>
-  <table-filter match-name="friends"/>
+  <table-filter match-name="posts"/>
+  <table-filter match-name="comments"/>
+  <table-filter match-name="users"/>
 </hibernate-reverse-engineering>

@@ -6,10 +6,7 @@
 //1=wall, 2=group, 3=page, 4=comment
 package jfacebook;
 import connection.dbtest;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import connection.Controller;
-import java.util.List;
-import qk.qout;
+
 //import models.UsersModel;
 /**
  *
