@@ -5,6 +5,7 @@
 package gui;
 
 import java.util.Date;
+import javax.swing.JOptionPane;
 import models.UsersModel;
 import pojos.Users;
 
@@ -13,7 +14,8 @@ import pojos.Users;
  * @author hassan
  */
 public class registerWindow extends javax.swing.JFrame {
-   // private loginWindow loginwindow;
+    // private loginWindow loginwindow;
+
     /**
      * Creates new form registerWindow
      */
@@ -21,11 +23,12 @@ public class registerWindow extends javax.swing.JFrame {
         initComponents();
         this.setTitle("Register");
     }
- ///   public registerWindow(loginWindow l) {
-   //     initComponents();
-  //      this.setTitle("Register");
-  //      loginwindow = l;
-  //  }
+    ///   public registerWindow(loginWindow l) {
+    //     initComponents();
+    //      this.setTitle("Register");
+    //      loginwindow = l;
+    //  }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -226,29 +229,52 @@ public class registerWindow extends javax.swing.JFrame {
     private void usernameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTextActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_usernameTextActionPerformed
-
+    private boolean checks() {
+        
+        if (dayText.getText() == "day") {
+            JOptionPane.showMessageDialog(null, "please set date in integer");
+            return false;
+        }
+        
+        if (monthText.getText() == "month") {
+            JOptionPane.showMessageDialog(null, "please set date in integer");
+            return false;
+        }
+        
+        if (yearText.getText() == "year") {
+            JOptionPane.showMessageDialog(null, "please set date in integer");
+            return false;
+        }
+        return true;
+    }
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        if(UsersModel.usernameExists(usernameText.getText())) {
-            javax.swing.JOptionPane.showMessageDialog(null, "username already exists!", "Register", javax.swing.JOptionPane.ERROR_MESSAGE);
-        } else {
-            if(UsersModel.emailExists(emailText.getText())) {
-                javax.swing.JOptionPane.showMessageDialog(null, "email already exists!", "Register", javax.swing.JOptionPane.ERROR_MESSAGE);
-  
+        if (checks()) {
+            if (UsersModel.usernameExists(usernameText.getText())) {
+                javax.swing.JOptionPane.showMessageDialog(null, "username already exists!", "Register", javax.swing.JOptionPane.ERROR_MESSAGE);
             } else {
-                Users user;
-                user = new Users(firstNameText.getText(), lastNameText.getText(), 
-                        usernameText.getText(), passwordText.getText(), emailText.getText(), 
-                        new Date(Integer.parseInt(yearText.getText()) -1900, Integer.parseInt(monthText.getText()), Integer.parseInt(dayText.getText())), 
-                        new Date());
-                if(UsersModel.addUser(user)) {
-                    javax.swing.JOptionPane.showMessageDialog(null, "Account Created!", "Register", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-  
+                if (UsersModel.emailExists(emailText.getText())) {
+                    javax.swing.JOptionPane.showMessageDialog(null, "email already exists!", "Register", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    
                 } else {
-                    javax.swing.JOptionPane.showMessageDialog(null, "Error while creating account!", "Register", javax.swing.JOptionPane.ERROR_MESSAGE);
-  
+                    try {
+                        Users user;
+                        user = new Users(firstNameText.getText(), lastNameText.getText(),
+                                usernameText.getText(), passwordText.getText(), emailText.getText(),
+                                new Date(Integer.parseInt(yearText.getText()) - 1900, Integer.parseInt(monthText.getText()), Integer.parseInt(dayText.getText())),
+                                new Date());
+                        if (UsersModel.addUser(user)) {
+                            javax.swing.JOptionPane.showMessageDialog(null, "Account Created!", "Register", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                            
+                        } else {
+                            javax.swing.JOptionPane.showMessageDialog(null, "Error while creating account!", "Register", javax.swing.JOptionPane.ERROR_MESSAGE);
+                            
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error: Please fill the form correctly");
+                    }
+                    
                 }
-                
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -257,8 +283,8 @@ public class registerWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
         loginWindow l = new loginWindow();
         l.setVisible(true);
-            this.dispose();
-        
+        this.dispose();
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
