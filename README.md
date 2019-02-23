@@ -1,2 +1,2 @@
 # JFacebook
-This was my final semester project
+This was my semester project
